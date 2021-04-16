@@ -13,34 +13,40 @@ graph["b"]["fin"] = 5
 
 graph["fin"] = {}
 
-#инициализируем таблицу стоимостей
+infinity = float("inf")
 costs = {}
-costs['a'] = 6
-costs['b'] = 2
-costs['fin'] = float('inf')
+costs["a"] = 6
+costs["b"] = 2
+costs["fin"] = infinity
 
-#задаётся таблица родителей
 parents = {}
-parents['a'] = 'start'
-parents['b'] = 'start'
-parents['fin'] = None
+parents["a"] = "start"
+parents["b"] = "start"
+parents["fin"] = None
 
-#проверенные узлы (узел не должен проверяться дважды)
-visited = []
+processed = []
 
-def check_nodes_positive(graph: dict):
-    for elem in graph.keys():
-        if isinstance(graph[elem], dict):
-                if not check_nodes_positive(graph=graph[elem]):
-                    return False
-        else:
-            for val in graph.values():
-                if val < 0:
-                    return False
-    return True
+def find_lowest_cost_node(costs):
+    lowest_cost = float("inf")
+    lowest_cost_node = None
+    for node in costs:
+        cost = costs[node]
+        if cost < lowest_cost and node not in processed:
+            lowest_cost = cost
+            lowest_cost_node = node
+    return lowest_cost_node
 
-def dijkstra(graph: dict):
-    if not check_nodes_positive(graph):
-        return
+node = find_lowest_cost_node(costs)
+while node is not None:
+    cost = costs[node]
+    neighbors = graph[node]
+    for n in neighbors.keys():
+        new_cost = cost + neighbors[n]
+        if costs[n] > new_cost:
+            costs[n] = new_cost
+            parents[n] = node
+    processed.append(node)
+    node = find_lowest_cost_node(costs)
 
-dijkstra(graph)
+print("Cost from the start to each node:")
+print(costs)
